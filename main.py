@@ -103,6 +103,8 @@ def evaluate_rating(rating):
         return 2
     elif 3.5 <= rating < 4.0:
         return 1
+    elif rating < 3.5:
+        return -3 if rating <= 2.0 else -1
     else:
         return 0
 
@@ -114,7 +116,11 @@ def calculate_overall_score(reviews, review_count):
         quality_score = evaluate_review_quality(text)
         count_score = evaluate_review_count(review_count)
         rating_score = evaluate_rating(rating)
-        weighted_score = (quality_score + count_score + rating_score) * rating
+        # 低評価の場合はマイナスのスコアを適用
+        if rating <= 2:
+            weighted_score = -(quality_score + count_score + rating_score) * abs(rating)
+        else:
+            weighted_score = (quality_score + count_score + rating_score) * rating
         weighted_scores.append(weighted_score)
     
     return sum(weighted_scores) / len(reviews) if reviews else 0
