@@ -107,12 +107,17 @@ def evaluate_rating(rating):
         return 0
 
 def calculate_overall_score(reviews, review_count):
-    total_score = 0
+    weighted_scores = []
     for review in reviews:
         text = review.get('text', '')
         rating = review.get('rating', 0)
-        total_score += evaluate_review_quality(text) + evaluate_review_count(review_count) + evaluate_rating(rating)
-    return total_score / len(reviews) if reviews else 0
+        quality_score = evaluate_review_quality(text)
+        count_score = evaluate_review_count(review_count)
+        rating_score = evaluate_rating(rating)
+        weighted_score = (quality_score + count_score + rating_score) * rating
+        weighted_scores.append(weighted_score)
+    
+    return sum(weighted_scores) / len(reviews) if reviews else 0
 
 # 一定基準以上の口コミをフィルタリングしてリストに追加
 high_rated_doctors = defaultdict(list)
